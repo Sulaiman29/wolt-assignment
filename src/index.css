@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+@layer components {
+  .input-field {
+    @apply w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors
+    bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700
+    text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500;
+  }
+  
+  .primary-button {
+    @apply w-full px-6 py-3.5 rounded-xl font-medium transition-all duration-200
+    bg-blue-600 hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800
+    dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:bg-blue-600 dark:active:bg-blue-700
+    text-white shadow-lg hover:shadow-xl
+    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900
+    disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+}
