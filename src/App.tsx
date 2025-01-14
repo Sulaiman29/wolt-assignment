@@ -60,12 +60,12 @@ function App() {
 
     try {
       const { staticData, dynamicData } = await fetchVenueData(venueSlug);
-
+      
       const distance = calculateDistance(
         userLocation.lat,
         userLocation.lon,
-        staticData.location.coordinates[1], // Latitude
-        staticData.location.coordinates[0]  // Longitude
+        staticData.venue_raw.location.coordinates[1], // Latitude
+        staticData.venue_raw.location.coordinates[0]  // Longitude
       );
 
       const cartValueCents = Math.round(parseFloat(cartValue) * 100);

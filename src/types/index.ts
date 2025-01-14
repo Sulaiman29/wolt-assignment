@@ -1,7 +1,9 @@
 export interface VenueStatic {
   id: string;
-  location: {
-    coordinates: [number, number];
+  venue_raw: {
+    location: {
+      coordinates: [number, number];
+    };
   };
 }
 
