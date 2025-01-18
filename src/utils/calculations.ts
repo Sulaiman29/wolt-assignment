@@ -23,18 +23,18 @@ export function calculateDeliveryFee(
   distance: number,
   basePrice: number,
   distanceRanges: Array<{
-    from: number;
-    to: number | null;
+    min: number;
+    max: number | null;
     a: number;
     b: number;
   }>
-): number {
+): number { console.log('distanceRanges', distanceRanges);
   const applicableRange = distanceRanges.find(
     (range) =>
-      distance >= range.from &&
-      (range.to === null || distance <= range.to)
+      distance >= range.min &&
+      (range.max === null || distance <= range.max)
   );
-
+    console.log('range boolean', applicableRange);
   if (!applicableRange) {
     throw new Error('Distance exceeds maximum delivery range');
   }

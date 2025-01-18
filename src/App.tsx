@@ -60,26 +60,27 @@ function App() {
 
     try {
       const { staticData, dynamicData } = await fetchVenueData(venueSlug);
-      
+      console.log('Fetched static data:', staticData);
+      console.log('Fetched dynamic data:', dynamicData);
       const distance = calculateDistance(
         userLocation.lat,
         userLocation.lon,
         staticData.venue_raw.location.coordinates[1], // Latitude
         staticData.venue_raw.location.coordinates[0]  // Longitude
       );
-
+      console.log('distance:', distance);
       const cartValueCents = Math.round(parseFloat(cartValue) * 100);
       const smallOrderSurcharge = calculateSmallOrderSurcharge(
         cartValueCents,
-        dynamicData.order_minimum_no_surcharge
+        dynamicData?.venue_raw?.delivery_specs?.order_minimum_no_surcharge ?? 0
       );
-
+      console.log('smallOrderSurcharge: ', smallOrderSurcharge);
       const deliveryFee = calculateDeliveryFee(
         distance,
-        dynamicData.base_price,
-        dynamicData.distance_ranges
+        dynamicData.venue_raw.delivery_specs.delivery_pricing.base_price,
+        dynamicData.venue_raw.delivery_specs.delivery_pricing.distance_ranges
       );
-
+      
       setResults({
         smallOrderSurcharge,
         deliveryFee,

@@ -8,17 +8,24 @@ export interface VenueStatic {
 }
 
 export interface DistanceRange {
-  from: number;
-  to: number | null;
+  min: number;
+  max: number | null;
   a: number;
   b: number;
+  flag: null; // 'flag' is currently unused because it's always null, but included here for completeness
 }
 
 export interface VenueDynamic {
-  id: string;
-  order_minimum_no_surcharge: number;
-  base_price: number;
-  distance_ranges: DistanceRange[];
+  id: string; 
+  venue_raw: {
+    delivery_specs: {
+      order_minimum_no_surcharge: number; 
+      delivery_pricing: {
+        base_price: number;
+        distance_ranges: DistanceRange[]; 
+      };
+    };
+  };
 }
 
 export interface DeliveryCalculation {
