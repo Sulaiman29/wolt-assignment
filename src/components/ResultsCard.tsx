@@ -1,6 +1,6 @@
 import React from 'react';
 import { DeliveryCalculation } from '../types';
-import { ShoppingBag, Truck, MapPin, CreditCard } from 'lucide-react';
+import { ShoppingBag, Truck, MapPin, CreditCard, ShoppingCart } from 'lucide-react';
 
 interface ResultsCardProps {
   results: DeliveryCalculation | null;
@@ -39,20 +39,35 @@ export function ResultsCard({ results, error }: ResultsCardProps) {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Delivery Summary</h2>
-      
+
       <div className="space-y-6">
+        {/* Cart Value */}
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+              <ShoppingCart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <span className="text-gray-600 dark:text-gray-300">Cart Value</span>
+          </div>
+          <span className="font-semibold text-gray-900 dark:text-white">
+            {formatPrice(results.cartValue)}
+          </span>
+        </div>
+
+        {/* Small Order Surcharge */}
         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
               <ShoppingBag className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-gray-600 dark:text-gray-300">Small Order Fee</span>
+            <span className="text-gray-600 dark:text-gray-300">Small Order Surcharge</span>
           </div>
           <span className="font-semibold text-gray-900 dark:text-white">
             {formatPrice(results.smallOrderSurcharge)}
           </span>
         </div>
-        
+
+        {/* Delivery Fee */}
         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
@@ -64,19 +79,21 @@ export function ResultsCard({ results, error }: ResultsCardProps) {
             {formatPrice(results.deliveryFee)}
           </span>
         </div>
-        
+
+        {/* Delivery Distance */}
         <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
               <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-gray-600 dark:text-gray-300">Distance</span>
+            <span className="text-gray-600 dark:text-gray-300">Delivery Distance</span>
           </div>
           <span className="font-semibold text-gray-900 dark:text-white">
-            {(results.deliveryDistance / 1000).toFixed(2)} km
+          {Math.round(results.deliveryDistance).toLocaleString('en-US')} m
           </span>
         </div>
-        
+
+        {/* Total */}
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

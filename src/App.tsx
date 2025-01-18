@@ -82,6 +82,7 @@ function App() {
       );
       
       setResults({
+        cartValue: cartValueCents,
         smallOrderSurcharge,
         deliveryFee,
         deliveryDistance: distance,

@@ -29,6 +29,7 @@ export interface VenueDynamic {
 }
 
 export interface DeliveryCalculation {
+  cartValue: number;
   smallOrderSurcharge: number;
   deliveryFee: number;
   deliveryDistance: number;
