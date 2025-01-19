@@ -11,7 +11,7 @@ export function ResultsCard({ results, error }: ResultsCardProps) {
   if (error) {
     return (
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6" role="alert">
-        <p className="text-red-700 dark:text-red-400">{error}</p>
+        <p className="text-red-700 dark:text-red-400" aria-live="assertive">{error}</p>
       </div>
     );
   }
@@ -38,16 +38,16 @@ export function ResultsCard({ results, error }: ResultsCardProps) {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 p-8">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Delivery Summary</h2>
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6" id="delivery-summary">Delivery Summary</h2>
 
       <div className="space-y-6">
         {/* Cart Value */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl" aria-labelledby="cart-value-label" role="group">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
               <ShoppingCart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-gray-600 dark:text-gray-300">Cart Value</span>
+            <span id="cart-value-label" className="text-gray-600 dark:text-gray-300">Cart Value</span>
           </div>
           <span className="font-semibold text-gray-900 dark:text-white">
             {formatPrice(results.cartValue)}
@@ -55,12 +55,12 @@ export function ResultsCard({ results, error }: ResultsCardProps) {
         </div>
 
         {/* Small Order Surcharge */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl" aria-labelledby="small-order-surcharge-label" role="group">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
               <ShoppingBag className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-gray-600 dark:text-gray-300">Small Order Surcharge</span>
+            <span id="small-order-surcharge-label" className="text-gray-600 dark:text-gray-300">Small Order Surcharge</span>
           </div>
           <span className="font-semibold text-gray-900 dark:text-white">
             {formatPrice(results.smallOrderSurcharge)}
@@ -68,12 +68,12 @@ export function ResultsCard({ results, error }: ResultsCardProps) {
         </div>
 
         {/* Delivery Fee */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl" aria-labelledby="delivery-fee-label" role="group">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
               <Truck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-gray-600 dark:text-gray-300">Delivery Fee</span>
+            <span id="delivery-fee-label" className="text-gray-600 dark:text-gray-300">Delivery Fee</span>
           </div>
           <span className="font-semibold text-gray-900 dark:text-white">
             {formatPrice(results.deliveryFee)}
@@ -81,15 +81,15 @@ export function ResultsCard({ results, error }: ResultsCardProps) {
         </div>
 
         {/* Delivery Distance */}
-        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl">
+        <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900/50 rounded-xl" aria-labelledby="delivery-distance-label" role="group">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
               <MapPin className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-gray-600 dark:text-gray-300">Delivery Distance</span>
+            <span id="delivery-distance-label" className="text-gray-600 dark:text-gray-300">Delivery Distance</span>
           </div>
           <span className="font-semibold text-gray-900 dark:text-white">
-          {Math.round(results.deliveryDistance).toLocaleString('en-US')} m
+            {Math.round(results.deliveryDistance).toLocaleString('en-US')} m
           </span>
         </div>
 
