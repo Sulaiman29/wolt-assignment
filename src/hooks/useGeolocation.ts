@@ -7,6 +7,10 @@ interface GeolocationState {
   loading: boolean;
 }
 
+function roundToSixDecimalPlaces(value: number): number {
+  return Math.round(value * 1e6) / 1e6; // Round to 6 decimal places
+}
+
 export function useGeolocation() {
   const [state, setState] = useState<GeolocationState>({
     latitude: null,
@@ -28,9 +32,12 @@ export function useGeolocation() {
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        const roundedLatitude = roundToSixDecimalPlaces(position.coords.latitude);
+        const roundedLongitude = roundToSixDecimalPlaces(position.coords.longitude);
+
         setState({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          latitude: roundedLatitude,
+          longitude: roundedLongitude,
           error: null,
           loading: false,
         });
