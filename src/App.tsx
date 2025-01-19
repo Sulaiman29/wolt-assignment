@@ -1,25 +1,28 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Moon, Sun, Truck } from 'lucide-react';
-import { LocationInput } from './components/LocationInput';
-import { ResultsCard } from './components/ResultsCard';
-import { calculateDistance, calculateDeliveryFee, calculateSmallOrderSurcharge } from './utils/calculations';
-import type { VenueStatic, VenueDynamic, DeliveryCalculation } from './types';
+import React, { useState, useCallback, useEffect } from "react";
+import { Moon, Sun, Truck } from "lucide-react";
+import { LocationInput } from "./components/LocationInput";
+import { ResultsCard } from "./components/ResultsCard";
+import {
+  calculateDistance,
+  calculateDeliveryFee,
+  calculateSmallOrderSurcharge,
+} from "./utils/calculations";
+import type { VenueStatic, VenueDynamic, DeliveryCalculation } from "./types";
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
-  const [venueSlug, setVenueSlug] = useState('home-assignment-venue-helsinki');
-  const [cartValue, setCartValue] = useState('');
-  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [venueSlug, setVenueSlug] = useState("home-assignment-venue-helsinki");
+  const [cartValue, setCartValue] = useState("");
+  const [userLocation, setUserLocation] = useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
   const [results, setResults] = useState<DeliveryCalculation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.toggle("dark", darkMode);
   }, [darkMode]);
 
   const handleLocationChange = useCallback((lat: number, lon: number) => {
@@ -33,11 +36,13 @@ function App() {
     try {
       const [staticRes, dynamicRes] = await Promise.all([
         fetch(staticUrl),
-        fetch(dynamicUrl)
+        fetch(dynamicUrl),
       ]);
 
       if (!staticRes.ok || !dynamicRes.ok) {
-        throw new Error('Failed to fetch venue data. Please check the venue ID.');
+        throw new Error(
+          "Failed to fetch venue data. Please check the venue ID."
+        );
       }
 
       const staticData: VenueStatic = await staticRes.json();
@@ -45,13 +50,62 @@ function App() {
 
       return { staticData, dynamicData };
     } catch (error) {
-      throw new Error(error instanceof Error ? error.message : 'An error occurred while fetching data');
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : "An error occurred while fetching data"
+      );
     }
+  };
+  // Validate the input fields
+  const validateInputs = () => {
+    if (!venueSlug.trim()) {
+      return "Please enter a venue slug.";
+    }
+
+    if (
+      !cartValue.trim() ||
+      isNaN(Number(cartValue)) ||
+      Number(cartValue) < 0
+    ) {
+      return "Please enter a valid cart value in Euros.";
+    }
+
+    if (!userLocation) {
+      return "Please provide your location.";
+    }
+
+    const { lat, lon } = userLocation;
+
+    // Validation for latitude and longitude
+    const isLatitudeValid = (lat: number) => lat >= -90 && lat <= 90;
+    const isLongitudeValid = (lon: number) => lon >= -180 && lon <= 180;
+    const isNumber = (value: number) => !isNaN(value) && isFinite(value);
+    const isDecimalPrecisionValid = (value: number) => {
+      const decimalPlaces = value.toString().split(".")[1]?.length || 0;
+      return decimalPlaces <= 6;
+    };
+
+    if (!isNumber(lat) || !isNumber(lon)) {
+      return "Latitude and longitude must be valid numbers.";
+    }
+    if (!isLatitudeValid(lat)) {
+      return "Latitude must be between -90 and 90 degrees.";
+    }
+    if (!isLongitudeValid(lon)) {
+      return "Longitude must be between -180 and 180 degrees.";
+    }
+    if (!isDecimalPrecisionValid(lat) || !isDecimalPrecisionValid(lon)) {
+      return "Latitude and longitude can only have up to six decimal places.";
+    }
+
+    return null; // Valid inputs
   };
 
   const calculateDeliveryDetails = async () => {
-    if (!venueSlug || !cartValue || !userLocation) {
-      setError('Please fill in all fields');
+    const validationError = validateInputs();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -60,11 +114,15 @@ function App() {
 
     try {
       const { staticData, dynamicData } = await fetchVenueData(venueSlug);
+      if (!userLocation) {
+        setError("Please provide your location.");
+        return;
+      }
       const distance = calculateDistance(
         userLocation.lat,
         userLocation.lon,
         staticData.venue_raw.location.coordinates[1], // Latitude
-        staticData.venue_raw.location.coordinates[0]  // Longitude
+        staticData.venue_raw.location.coordinates[0] // Longitude
       );
       const cartValueCents = Math.round(parseFloat(cartValue) * 100);
       const smallOrderSurcharge = calculateSmallOrderSurcharge(
@@ -82,10 +140,10 @@ function App() {
         smallOrderSurcharge,
         deliveryFee,
         deliveryDistance: distance,
-        totalPrice: cartValueCents + smallOrderSurcharge + deliveryFee
+        totalPrice: cartValueCents + smallOrderSurcharge + deliveryFee,
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -96,7 +154,10 @@ function App() {
       <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
         <header className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
-            <Truck className="w-8 h-8 text-blue-600 dark:text-blue-400" aria-hidden="true" />
+            <Truck
+              className="w-8 h-8 text-blue-600 dark:text-blue-400"
+              aria-hidden="true"
+            />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
               Delivery Order Price Calculator
             </h1>
@@ -105,12 +166,13 @@ function App() {
             onClick={() => setDarkMode(!darkMode)}
             className="p-2.5 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 
                        transition-colors shadow-lg border border-gray-200 dark:border-gray-700"
-            aria-label={`Switch to ${darkMode ? 'light' : 'dark'} mode`}
+            aria-label={`Switch to ${darkMode ? "light" : "dark"} mode`}
           >
-            {darkMode ? 
-              <Sun className="w-5 h-5 text-yellow-500" aria-hidden="true" /> : 
+            {darkMode ? (
+              <Sun className="w-5 h-5 text-yellow-500" aria-hidden="true" />
+            ) : (
               <Moon className="w-5 h-5 text-blue-600" aria-hidden="true" />
-            }
+            )}
           </button>
         </header>
 
@@ -123,7 +185,10 @@ function App() {
               Input Section
             </h2>
             <div className="space-y-2">
-              <label htmlFor="venue-slug" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="venue-slug"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Venue Slug
               </label>
               <input
@@ -135,13 +200,19 @@ function App() {
                 className="input-field"
                 aria-describedby="venue-slug-helper"
               />
-              <p id="venue-slug-helper" className="text-sm text-gray-500 dark:text-gray-400">
+              <p
+                id="venue-slug-helper"
+                className="text-sm text-gray-500 dark:text-gray-400"
+              >
                 Enter the venue slug to calculate delivery fee.
               </p>
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="cart-value" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label
+                htmlFor="cart-value"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Cart Value (€)
               </label>
               <input
@@ -157,7 +228,9 @@ function App() {
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Delivery Location</h3>
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Delivery Location
+              </h3>
               <LocationInput onLocationChange={handleLocationChange} />
             </div>
 
@@ -167,7 +240,7 @@ function App() {
               className="primary-button"
               aria-live="polite"
             >
-              {loading ? 'Calculating...' : 'Calculate Delivery Fee'}
+              {loading ? "Calculating..." : "Calculate Delivery Fee"}
             </button>
           </section>
 
