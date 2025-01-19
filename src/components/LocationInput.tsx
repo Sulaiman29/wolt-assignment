@@ -14,8 +14,8 @@ export function LocationInput({ onLocationChange }: LocationInputProps) {
   // Handle geolocation updates
   useEffect(() => {
     if (latitude && longitude) {
-      setManualLat(latitude.toString());
-      setManualLon(longitude.toString());
+      setManualLat(latitude.toFixed(6)); // Ensure consistent precision
+      setManualLon(longitude.toFixed(6));
       onLocationChange(latitude, longitude);
     }
   }, [latitude, longitude, onLocationChange]);
@@ -33,7 +33,10 @@ export function LocationInput({ onLocationChange }: LocationInputProps) {
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1">
-          <label htmlFor="latitude" className="block text-sm font-medium text-gray-600 dark:text-gray-400">
+          <label
+            htmlFor="latitude"
+            className="block text-sm font-medium text-gray-600 dark:text-gray-400"
+          >
             Latitude
           </label>
           <input
@@ -44,10 +47,18 @@ export function LocationInput({ onLocationChange }: LocationInputProps) {
             className="input-field"
             step="any"
             placeholder="60.1699"
+            aria-required="true"
+            aria-describedby="latitude-desc"
           />
+          <p id="latitude-desc" className="sr-only">
+            Latitude should be a number between -90 and 90.
+          </p>
         </div>
         <div className="space-y-1">
-          <label htmlFor="longitude" className="block text-sm font-medium text-gray-600 dark:text-gray-400">
+          <label
+            htmlFor="longitude"
+            className="block text-sm font-medium text-gray-600 dark:text-gray-400"
+          >
             Longitude
           </label>
           <input
@@ -58,7 +69,12 @@ export function LocationInput({ onLocationChange }: LocationInputProps) {
             className="input-field"
             step="any"
             placeholder="24.9384"
+            aria-required="true"
+            aria-describedby="longitude-desc"
           />
+          <p id="longitude-desc" className="sr-only">
+            Longitude should be a number between -180 and 180.
+          </p>
         </div>
       </div>
       <button
@@ -69,13 +85,18 @@ export function LocationInput({ onLocationChange }: LocationInputProps) {
                    text-gray-700 dark:text-gray-200 font-medium transition-colors
                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800
                    disabled:opacity-50"
-        aria-label="Get current location"
+        aria-label="Get your current location using GPS"
+        aria-busy={loading}
       >
         <MapPin className="w-5 h-5" />
         {loading ? 'Getting location...' : 'Get Current Location'}
       </button>
       {error && (
-        <p className="text-red-500 text-sm mt-2" role="alert">
+        <p
+          className="text-red-500 text-sm mt-2"
+          role="alert"
+          aria-live="assertive"
+        >
           {error}
         </p>
       )}
