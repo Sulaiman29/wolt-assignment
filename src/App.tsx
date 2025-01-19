@@ -60,27 +60,23 @@ function App() {
 
     try {
       const { staticData, dynamicData } = await fetchVenueData(venueSlug);
-      console.log('Fetched static data:', staticData);
-      console.log('Fetched dynamic data:', dynamicData);
       const distance = calculateDistance(
         userLocation.lat,
         userLocation.lon,
         staticData.venue_raw.location.coordinates[1], // Latitude
         staticData.venue_raw.location.coordinates[0]  // Longitude
       );
-      console.log('distance:', distance);
       const cartValueCents = Math.round(parseFloat(cartValue) * 100);
       const smallOrderSurcharge = calculateSmallOrderSurcharge(
         cartValueCents,
         dynamicData?.venue_raw?.delivery_specs?.order_minimum_no_surcharge ?? 0
       );
-      console.log('smallOrderSurcharge: ', smallOrderSurcharge);
       const deliveryFee = calculateDeliveryFee(
         distance,
         dynamicData.venue_raw.delivery_specs.delivery_pricing.base_price,
         dynamicData.venue_raw.delivery_specs.delivery_pricing.distance_ranges
       );
-      
+
       setResults({
         cartValue: cartValueCents,
         smallOrderSurcharge,
@@ -98,9 +94,9 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-950 dark:to-gray-900 transition-colors duration-200">
       <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="flex justify-between items-center mb-8">
+        <header className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-3">
-            <Truck className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <Truck className="w-8 h-8 text-blue-600 dark:text-blue-400" aria-hidden="true" />
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
               Delivery Order Price Calculator
             </h1>
@@ -109,20 +105,26 @@ function App() {
             onClick={() => setDarkMode(!darkMode)}
             className="p-2.5 rounded-xl bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 
                        transition-colors shadow-lg border border-gray-200 dark:border-gray-700"
-            aria-label="Toggle dark mode"
+            aria-label={`Switch to ${darkMode ? 'light' : 'dark'} mode`}
           >
             {darkMode ? 
-              <Sun className="w-5 h-5 text-yellow-500" /> : 
-              <Moon className="w-5 h-5 text-blue-600" />
+              <Sun className="w-5 h-5 text-yellow-500" aria-hidden="true" /> : 
+              <Moon className="w-5 h-5 text-blue-600" aria-hidden="true" />
             }
           </button>
-        </div>
+        </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-6 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700">
+        <main className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <section
+            aria-labelledby="input-section-title"
+            className="space-y-6 bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700"
+          >
+            <h2 id="input-section-title" className="sr-only">
+              Input Section
+            </h2>
             <div className="space-y-2">
               <label htmlFor="venue-slug" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Venue ID
+                Venue Slug
               </label>
               <input
                 type="text"
@@ -131,7 +133,11 @@ function App() {
                 onChange={(e) => setVenueSlug(e.target.value)}
                 placeholder="e.g., home-assignment-venue-helsinki"
                 className="input-field"
+                aria-describedby="venue-slug-helper"
               />
+              <p id="venue-slug-helper" className="text-sm text-gray-500 dark:text-gray-400">
+                Enter the venue slug to calculate delivery fee.
+              </p>
             </div>
 
             <div className="space-y-2">
@@ -159,13 +165,14 @@ function App() {
               onClick={calculateDeliveryDetails}
               disabled={loading}
               className="primary-button"
+              aria-live="polite"
             >
               {loading ? 'Calculating...' : 'Calculate Delivery Fee'}
             </button>
-          </div>
+          </section>
 
           <ResultsCard results={results} error={error} />
-        </div>
+        </main>
       </div>
     </div>
   );
