@@ -13,6 +13,8 @@ function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [venueSlug, setVenueSlug] = useState("home-assignment-venue-helsinki");
   const [cartValue, setCartValue] = useState("");
+  const [venueSlugError, setVenueSlugError] = useState<string | null>(null); // Venue Slug Error
+  const [cartValueError, setCartValueError] = useState<string | null>(null); // Cart Value Error
   const [userLocation, setUserLocation] = useState<{
     lat: number;
     lon: number;
@@ -28,6 +30,30 @@ function App() {
   const handleLocationChange = useCallback((lat: number, lon: number) => {
     setUserLocation({ lat, lon });
   }, []);
+
+  // validation for venueSlug
+  const handleVenueSlugChange = (value: string) => {
+    setVenueSlug(value);
+    if (!value.trim()) {
+      setVenueSlugError("Please enter a valid venue slug.");
+    } else {
+      setVenueSlugError(null);
+    }
+  };
+
+  // validation for cartValue
+  const handleCartValueChange = (value: string) => {
+    setCartValue(value);
+
+    const cartValueNum = parseFloat(value);
+    if (!value.trim() || isNaN(cartValueNum) || cartValueNum <= 0) {
+      setCartValueError("Please enter a valid cart value in Euros.");
+    } else if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+      setCartValueError("Cart value must have at most 2 decimal places.");
+    } else {
+      setCartValueError(null);
+    }
+  };
 
   const fetchVenueData = async (slug: string) => {
     const staticUrl = `https://consumer-api.development.dev.woltapi.com/home-assignment-api/v1/venues/${slug}/static`;
@@ -57,55 +83,11 @@ function App() {
       );
     }
   };
-  // Validate the input fields
-  const validateInputs = () => {
-    if (!venueSlug.trim()) {
-      return "Please enter a venue slug.";
-    }
-
-    if (
-      !cartValue.trim() ||
-      isNaN(Number(cartValue)) ||
-      Number(cartValue) < 0
-    ) {
-      return "Please enter a valid cart value in Euros.";
-    }
-
-    if (!userLocation) {
-      return "Please provide your location.";
-    }
-
-    const { lat, lon } = userLocation;
-
-    // Validation for latitude and longitude
-    const isLatitudeValid = (lat: number) => lat >= -90 && lat <= 90;
-    const isLongitudeValid = (lon: number) => lon >= -180 && lon <= 180;
-    const isNumber = (value: number) => !isNaN(value) && isFinite(value);
-    const isDecimalPrecisionValid = (value: number) => {
-      const decimalPlaces = value.toString().split(".")[1]?.length || 0;
-      return decimalPlaces <= 6;
-    };
-
-    if (!isNumber(lat) || !isNumber(lon)) {
-      return "Latitude and longitude must be valid numbers.";
-    }
-    if (!isLatitudeValid(lat)) {
-      return "Latitude must be between -90 and 90 degrees.";
-    }
-    if (!isLongitudeValid(lon)) {
-      return "Longitude must be between -180 and 180 degrees.";
-    }
-    if (!isDecimalPrecisionValid(lat) || !isDecimalPrecisionValid(lon)) {
-      return "Latitude and longitude can only have up to six decimal places.";
-    }
-
-    return null; // Valid inputs
-  };
 
   const calculateDeliveryDetails = async () => {
-    const validationError = validateInputs();
-    if (validationError) {
-      setError(validationError);
+    // Do not proceed if there are validation errors
+    if (venueSlugError || cartValueError || !venueSlug.trim() || !cartValue.trim()) {
+      setError("Please fix the errors before submitting.");
       return;
     }
 
@@ -195,17 +177,17 @@ function App() {
                 type="text"
                 id="venue-slug"
                 value={venueSlug}
-                onChange={(e) => setVenueSlug(e.target.value)}
+                onChange={(e) => handleVenueSlugChange(e.target.value)}
                 placeholder="e.g., home-assignment-venue-helsinki"
-                className="input-field"
+                className={`input-field ${
+                  venueSlugError ? "border-red-500" : ""
+                }`}
                 aria-describedby="venue-slug-helper"
+                data-test-id="venueSlug"
               />
-              <p
-                id="venue-slug-helper"
-                className="text-sm text-gray-500 dark:text-gray-400"
-              >
-                Enter the venue slug to calculate delivery fee.
-              </p>
+              {venueSlugError && (
+                <p className="text-sm text-red-500">{venueSlugError}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -219,19 +201,28 @@ function App() {
                 type="number"
                 id="cart-value"
                 value={cartValue}
-                onChange={(e) => setCartValue(e.target.value)}
+                onChange={(e) => handleCartValueChange(e.target.value)}
                 step="0.01"
                 min="0"
                 placeholder="0.00"
-                className="input-field"
+                className={`input-field ${
+                  cartValueError ? "border-red-500" : ""
+                }`}
+                data-test-id="cartValue"
               />
+              {cartValueError && (
+                <p className="text-sm text-red-500">{cartValueError}</p>
+              )}
             </div>
 
             <div className="space-y-2">
               <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Delivery Location
               </h3>
-              <LocationInput onLocationChange={handleLocationChange} />
+              <LocationInput
+                onLocationChange={handleLocationChange}
+                data-test-id="userLocation"
+              />
             </div>
 
             <button
@@ -239,9 +230,12 @@ function App() {
               disabled={loading}
               className="primary-button"
               aria-live="polite"
+              data-test-id="calculateDeliveryPrice"
             >
-              {loading ? "Calculating..." : "Calculate Delivery Fee"}
+              {loading ? "Calculating..." : "Calculate Delivery Price"}
             </button>
+
+            
           </section>
 
           <ResultsCard results={results} error={error} />
