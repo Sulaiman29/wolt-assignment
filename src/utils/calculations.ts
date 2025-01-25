@@ -37,7 +37,6 @@ export function calculateDeliveryFee(
       distance >= range.min &&
       (range.max === null || distance <= range.max)
   );
-    console.log('range boolean', applicableRange);
   if (!applicableRange) {
     throw new Error('Distance exceeds maximum delivery range');
   }

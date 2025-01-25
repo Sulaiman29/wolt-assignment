@@ -4,6 +4,7 @@ import { useGeolocation } from "../hooks/useGeolocation";
 
 interface LocationInputProps {
   onLocationChange: (lat: number, lon: number) => void;
+  "data-test-id"?: string;
 }
 
 export function LocationInput({ onLocationChange }: LocationInputProps) {
