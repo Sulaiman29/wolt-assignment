@@ -6,7 +6,12 @@ This project is a React-based application for calculating delivery prices based 
 - Fetches venue-specific data for delivery calculations.
 - Displays results dynamically in a `ResultsCard` component.
 
-The project uses **Vitest** for testing, along with **React Testing Library** for DOM assertions.
+//// Technologies Used
+React: Frontend framework
+TypeScript: Type-safe JavaScript for better maintainability
+Vitest: Testing framework
+React Testing Library: For DOM testing
+
 
 ---
 
