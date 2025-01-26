@@ -31,7 +31,7 @@ export function calculateDeliveryFee(
     a: number;
     b: number;
   }>
-): number { console.log('distanceRanges', distanceRanges);
+): number { 
   const applicableRange = distanceRanges.find(
     (range) =>
       distance >= range.min &&

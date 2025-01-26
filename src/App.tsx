@@ -98,7 +98,9 @@ function App() {
 
     try {
       const { staticData, dynamicData } = await fetchVenueData(venueSlug);
+      console.log(userLocation);
       if (!userLocation) {
+        
         setError("Please provide your location.");
         return;
       }
