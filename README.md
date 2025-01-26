@@ -50,3 +50,5 @@ ResultsCard.test.tsx:
 Verifies that the ResultsCard component correctly renders delivery details or error messages based on the state.
 App.test.tsx:
 Tests the integration of all components, including form submission and results display.
+AppFlow.test.tsx:
+End-to-end testing of overall flow of app.
