@@ -34,7 +34,6 @@ export function useGeolocation() {
       (position) => {
         const roundedLatitude = roundToSixDecimalPlaces(position.coords.latitude);
         const roundedLongitude = roundToSixDecimalPlaces(position.coords.longitude);
-
         setState({
           latitude: roundedLatitude,
           longitude: roundedLongitude,
@@ -53,5 +52,5 @@ export function useGeolocation() {
     );
   };
 
-  return { ...state, getLocation };
+  return { ...state, getLocation, setState };
 }

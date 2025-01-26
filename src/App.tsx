@@ -22,6 +22,7 @@ function App() {
   const [results, setResults] = useState<DeliveryCalculation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isValidLocation, setIsValidLocation] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -88,7 +89,7 @@ function App() {
     // Do not proceed if there are validation errors
     if ( !venueSlug.trim()) { setVenueSlugError("Please enter a valid venue slug."); }
     if ( !cartValue.trim()) { setCartValueError("Please enter a valid cart value in Euros."); }
-    if (venueSlugError || cartValueError || !venueSlug.trim() || !cartValue.trim()) {
+    if (venueSlugError || cartValueError || !venueSlug.trim() || !cartValue.trim() || !isValidLocation) {
       setError("Please fix the errors before submitting.");
       return;
     }
@@ -98,9 +99,7 @@ function App() {
 
     try {
       const { staticData, dynamicData } = await fetchVenueData(venueSlug);
-      console.log(userLocation);
       if (!userLocation) {
-        
         setError("Please provide your location.");
         return;
       }
@@ -225,6 +224,7 @@ function App() {
               </h3>
               <LocationInput
                 onLocationChange={handleLocationChange}
+                setIsValidLocation={setIsValidLocation}
                 data-test-id="userLocation"
               />
             </div>

@@ -5,10 +5,11 @@ import { useGeolocation } from "../hooks/useGeolocation";
 interface LocationInputProps {
   onLocationChange: (lat: number, lon: number) => void;
   "data-test-id"?: string;
+  setIsValidLocation:(val: boolean) => void;
 }
 
-export function LocationInput({ onLocationChange }: LocationInputProps) {
-  const { latitude, longitude, error, loading, getLocation } = useGeolocation();
+export function LocationInput({ onLocationChange, setIsValidLocation }: LocationInputProps) {
+  const { latitude, longitude, error, loading, getLocation, setState } = useGeolocation();
   const [manualLat, setManualLat] = useState("");
   const [manualLon, setManualLon] = useState("");
   const [latError, setLatError] = useState<string | null>(null);
@@ -33,6 +34,7 @@ export function LocationInput({ onLocationChange }: LocationInputProps) {
   // Handle validation on input change
   const handleLatitudeChange = (value: string) => {
     setManualLat(value);
+    setState(prev => ({...prev, latitude: Number(value)}))
     setLatError(validateLatitude(value));
     if (!validateLatitude(value) && !validateLongitude(manualLon)) {
       onLocationChange(parseFloat(value), parseFloat(manualLon));
@@ -41,6 +43,7 @@ export function LocationInput({ onLocationChange }: LocationInputProps) {
 
   const handleLongitudeChange = (value: string) => {
     setManualLon(value);
+    setState(prev => ({...prev, longitude: Number(value)}))
     setLonError(validateLongitude(value));
     if (!validateLongitude(value) && !validateLatitude(manualLat)) {
       onLocationChange(parseFloat(manualLat), parseFloat(value));
@@ -50,15 +53,20 @@ export function LocationInput({ onLocationChange }: LocationInputProps) {
   // Populate fields when geolocation updates
   useEffect(() => {
     if (latitude && longitude) {
-      const latString = latitude.toFixed(6);
-      const lonString = longitude.toFixed(6);
-      setManualLat(latString);
-      setManualLon(lonString);
-      setLatError(null);
-      setLonError(null);
+      setManualLat(String(latitude));
+      setManualLon(String(longitude));
+      const lat_error = validateLatitude(String(latitude));
+      const lon_error = validateLongitude(String(longitude));
+      setLatError(lat_error);
+      setLonError(lon_error);
       onLocationChange(latitude, longitude);
+      setIsValidLocation(!lat_error && !lon_error);
     }
-  }, [latitude, longitude, onLocationChange]);
+    else {
+      setIsValidLocation(false);
+
+    }
+  }, [latitude, longitude, onLocationChange, setIsValidLocation]);
 
   return (
     <div className="space-y-4">
