@@ -86,6 +86,8 @@ function App() {
 
   const calculateDeliveryDetails = async () => {
     // Do not proceed if there are validation errors
+    if ( !venueSlug.trim()) { setVenueSlugError("Please enter a valid venue slug."); }
+    if ( !cartValue.trim()) { setCartValueError("Please enter a valid cart value in Euros."); }
     if (venueSlugError || cartValueError || !venueSlug.trim() || !cartValue.trim()) {
       setError("Please fix the errors before submitting.");
       return;
